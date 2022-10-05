@@ -17,6 +17,7 @@ const SENDWEBHOOKS = process.env.SEND_WEBHOOKS;
 let new_song = false
 const PROTOCOL = process.env.PROTOCOL
 const PORT = process.env.PORT
+const debug = process.env.debug
 let song_history = [" "];
 app.listen(80, () => {
   console.log("App listening on http://localhost:80");
@@ -152,6 +153,7 @@ async function main() {
           updateWebhook(artist, song, album, duration_time, image_url);
         }
       }
+      
       const text = `${progress_time} / ${duration_time} - ${song} by ${artist} - is new song -> ${new_song} - History length : ${song_history.length}`;
       const songText = `<p id="song"> Song ${song} </p>`;
       const albumText = `<p id="album> Album ${album} </p>`;
@@ -163,15 +165,14 @@ async function main() {
       const finalText = songText + spacer + albumText + spacer + artistText + spacer + durationText + spacer + newSongText  + spacer + imageLink
       fs.writeFileSync("./output/song.txt", text);
       fs.writeFileSync("./views/body.ejs", finalText);
+      requestsMade++;
+      if(debug == "true"){
       console.clear();
-
       console.table(song_history);
-      //console.log(song_history[song_history.length])
       console.log("Currently playing:");
       console.log(text);
-
-      requestsMade++;
       console.log("Requests Made:", requestsMade);
+      }
       isRequesting = false;
     } else {
       console.clear();
