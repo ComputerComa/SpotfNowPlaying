@@ -1,7 +1,7 @@
 console.log("This is coming from script.js");
 setInterval(checkReload,1000)
 function checkReload(){
-    fetch("http://localhost/reload")
+    fetch("https://nowplaying.synapselabs.xyz/reload")
 .then(response =>{
     if (!response.ok){
         console.error(`Request failed with status ${response.status}`)

@@ -9,7 +9,9 @@
     "discord.js": "^14.5.0",
     "dotenv": "^8.6.0",
     "ejs": "^3.1.8",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

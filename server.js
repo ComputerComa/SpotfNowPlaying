@@ -18,12 +18,32 @@ let new_song = false
 const PROTOCOL = process.env.PROTOCOL
 const PORT = process.env.PORT
 const debug = process.env.debug
+const https = require('https');
+const http = require('http');
 let song_history = [" "];
-app.listen(80, () => {
-  console.log("App listening on http://localhost:80");
-});
+
+//app.listen(PORT, () => {
+//  console.log("App listening on http://localhost:80");
+//});
+
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
+
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer({
+  key: fs.readFileSync('/etc/letsencrypt/live/my_api_url/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/my_api_url/fullchain.pem'),
+}, app);
+
+httpServer.listen(80, () => {
+    console.log('HTTP Server running on port 80');
+});
+
+httpsServer.listen(443, () => {
+    console.log('HTTPS Server running on port 443');
+});
+
+
 /* ++++++++++++++++++++++++++ */
 /* +++ USER AUTHORIZATION +++ */
 /* ++++++++++++++++++++++++++ */
