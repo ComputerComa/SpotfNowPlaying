@@ -211,7 +211,7 @@ async function main() {
 /* +++ START MAIN LOOP +++ */
 /* +++++++++++++++++++++++ */
 setupRefreshTokenTxt(() => {
-  setInterval(main, 5000);
+  setInterval(main, 2000);
 });
 
 /* ++++++++++++++++++++++++ */
