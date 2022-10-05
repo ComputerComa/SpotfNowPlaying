@@ -7,7 +7,8 @@
     "axios": "^0.21.1",
     "discord-webhook-node": "^1.1.8",
     "discord.js": "^14.5.0",
-    "dotenv": "^8.1.0",
+    "dotenv": "^8.6.0",
+    "ejs": "^3.1.8",
     "express": "^4.17.1"
   },
   "scripts": {
