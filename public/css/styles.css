@@ -1,0 +1,11 @@
+body {
+    background-color: #081c53;
+    font-family: "Lato", "Helvetica", Helvetica, sans-serif;
+    color: #f71e29;
+    padding: 20px;
+    letter-spacing: 1px;
+    text-align: center;
+}
+img{
+    border-radius: 50%;
+}
