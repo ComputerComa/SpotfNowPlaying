@@ -31,8 +31,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer({
-  key: fs.readFileSync('/etc/letsencrypt/live/my_api_url/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/my_api_url/fullchain.pem'),
+  key: fs.readFileSync('/etc/letsencrypt/live/nowplaying.synapselabs.xyz/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/nowplaying.synapselabs.xyz/fullchain.pem'),
 }, app);
 
 httpServer.listen(80, () => {
