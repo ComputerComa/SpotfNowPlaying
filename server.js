@@ -31,17 +31,17 @@ let song_history = [" "];
 
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
-var checkURL = `"${PROTOCOL} + ${CALLBACKURL} + ${PORT} + /reload"`
-var localData = `localStorage.setItem("checkURL", ${checkURL}) `
 
-fs.writeFileSync("public/js/callback.js",localData)
 
-const httpServer = http.createServer(app);
-httpServer.listen(80, () => {
-    console.log('HTTP Server running on port 80');
-});
+
+
+
+
 
 if(use_https == "true"){
+  var checkURL = `"${PROTOCOL} + ${CALLBACKURL} + /reload"`
+var localData = `localStorage.setItem("checkURL", ${checkURL}) `
+fs.writeFileSync("public/js/callback.js",localData)
   PROTOCOL = "https://"
   PORT = "443"
   const certPath = process.env.CERT_PATH
@@ -55,8 +55,15 @@ httpsServer.listen(443, () => {
 });
 } else {
   console.info("HTTPS disabled , serving on http only!")
+var checkURL = `"${PROTOCOL} + ${CALLBACKURL} + :80/reload"`
+var localData = `localStorage.setItem("checkURL", ${checkURL}) `
+fs.writeFileSync("public/js/callback.js",localData)
 }
 
+const httpServer = http.createServer(app);
+httpServer.listen(80, () => {
+    console.log('HTTP Server running on port 80');
+});
 
 /* ++++++++++++++++++++++++++ */
 /* +++ USER AUTHORIZATION +++ */
