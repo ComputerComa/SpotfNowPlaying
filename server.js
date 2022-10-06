@@ -39,7 +39,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 
 if(use_https == "true"){
-  var checkURL = `"${PROTOCOL} + ${CALLBACKURL} + /reload"`
+  var checkURL = `"${PROTOCOL}${CALLBACKURL}/reload"`
 var localData = `localStorage.setItem("checkURL", ${checkURL}) `
 fs.writeFileSync("public/js/callback.js",localData)
   PROTOCOL = "https://"
@@ -55,7 +55,7 @@ httpsServer.listen(443, () => {
 });
 } else {
   console.info("HTTPS disabled , serving on http only!")
-var checkURL = `"${PROTOCOL} + ${CALLBACKURL} + :80/reload"`
+var checkURL = `"${PROTOCOL}${CALLBACKURL}:80/reload"`
 var localData = `localStorage.setItem("checkURL", ${checkURL}) `
 fs.writeFileSync("public/js/callback.js",localData)
 }
