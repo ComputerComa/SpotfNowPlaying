@@ -1,4 +1,5 @@
 console.log("This is coming from script.js");
+localStorage.setItem("webtitle","Now Playing")
 setInterval(checkReload,1000)
 function checkReload(){
     fetch("https://nowplaying.synapselabs.xyz/reload")
@@ -19,7 +20,8 @@ function checkReload(){
         let artist = document.getElementById("Artist")[1]
         artist = artist.split("Artist")[1]
         let title = "Now Playing - " + song + artist
-        document.title = title
+        localStorage.setItem("webtitle",title)
+        document.title = localStorage.getItem("webtitle")
     }
 })
 }
