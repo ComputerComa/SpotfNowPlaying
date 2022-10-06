@@ -201,10 +201,10 @@ async function main() {
       }
 
       const text = `${progress_time} / ${duration_time} - ${song} by ${artist} - is new song -> ${new_song} - History length : ${song_history.length}`;
-      const songText = `<p id="song"> Song ${song} </p>`;
-      const albumText = `<p id="album"> Album ${album} </p>`;
-      const artistText = `<p id="artist"> Artist ${artist} </p>`;
-      const durationText = `<p id="duration"> Duration ${duration_time} </p>`;
+      const songText = `<p id="song"> Song (${song})</p>`;
+      const albumText = `<p id="album"> Album (${album}) </p>`;
+      const artistText = `<p id="artist"> Artist (${artist})</p>`;
+      const durationText = `<p id="duration"> Duration (${duration_time})</p>`;
       const imageLink = `<img src="${image_url}" id="albumart"> </img>`;
       const newSongText = `<p hidden> ${new_song} </p>`;
       const spacer = "<br>";
