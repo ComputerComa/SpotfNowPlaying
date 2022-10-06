@@ -14,14 +14,14 @@ const base64data = buff.toString("base64");
 const DISCORD_USERNAME = process.env.DISCORD_USERNAME;
 const CALLBACKURL = process.env.CALLBACK_URL_IP;
 const SENDWEBHOOKS = process.env.SEND_WEBHOOKS;
-let new_song = false
+let new_song = false;
 //const PORT = process.env.PORT
-const debug = process.env.debug
-const https = require('https');
-const http = require('http');
-const use_https = process.env.USE_HTTPS
-PROTOCOL = "http://"
-PORT = 80
+const debug = process.env.debug;
+const https = require("https");
+const http = require("http");
+const use_https = process.env.USE_HTTPS;
+PROTOCOL = "http://";
+PORT = 80;
 
 let song_history = [" "];
 
@@ -32,37 +32,34 @@ let song_history = [" "];
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 
-
-
-
-
-
-
-if(use_https == "true"){
-  PROTOCOL = "https://"
-  PORT = "443"
-  const certPath = process.env.CERT_PATH
-  const keyPath = process.env.KEYFILE_Path
-    var checkURL = `"${PROTOCOL}${CALLBACKURL}/reload"`
-var localData = `localStorage.setItem("checkURL", ${checkURL}) `
-fs.writeFileSync("public/js/callback.js",localData)
-const httpsServer = https.createServer({
-  key: fs.readFileSync(keyPath),
-  cert: fs.readFileSync(certPath),
-}, app);
-httpsServer.listen(443, () => {
-    console.log('HTTPS Server running on port 443');
-});
+if (use_https == "true") {
+  PROTOCOL = "https://";
+  PORT = "443";
+  const certPath = process.env.CERT_PATH;
+  const keyPath = process.env.KEYFILE_Path;
+  var checkURL = `"${PROTOCOL}${CALLBACKURL}/reload"`;
+  var localData = `localStorage.setItem("checkURL", ${checkURL}) `;
+  fs.writeFileSync("public/js/callback.js", localData);
+  const httpsServer = https.createServer(
+    {
+      key: fs.readFileSync(keyPath),
+      cert: fs.readFileSync(certPath),
+    },
+    app
+  );
+  httpsServer.listen(443, () => {
+    console.log("HTTPS Server running on port 443");
+  });
 } else {
-  console.info("HTTPS disabled , serving on http only!")
-var checkURL = `"${PROTOCOL}${CALLBACKURL}:80/reload"`
-var localData = `localStorage.setItem("checkURL", ${checkURL}) `
-fs.writeFileSync("public/js/callback.js",localData)
+  console.info("HTTPS disabled , serving on http only!");
+  var checkURL = `"${PROTOCOL}${CALLBACKURL}:80/reload"`;
+  var localData = `localStorage.setItem("checkURL", ${checkURL}) `;
+  fs.writeFileSync("public/js/callback.js", localData);
 }
 
 const httpServer = http.createServer(app);
 httpServer.listen(80, () => {
-    console.log('HTTP Server running on port 80');
+  console.log("HTTP Server running on port 80");
 });
 
 /* ++++++++++++++++++++++++++ */
@@ -88,11 +85,9 @@ app.get("/login", function (req, res) {
   );
 });
 
-
-
-app.get("/reload",function(req,res){
-    res.json({reload : `${new_song}`,primary: "#081c53",secondary: "#f71e29"})
-})
+app.get("/reload", function (req, res) {
+  res.json({ reload: `${new_song}`, primary: "#081c53", secondary: "#f71e29" });
+});
 app.get("/callback", function (req, res) {
   const auth_code = req.query.code;
   const redirect_uri = PROTOCOL + CALLBACKURL + PORT + "/callback";
@@ -187,7 +182,7 @@ async function main() {
       const progress_time = millisToMinutesAndSeconds(progress_ms);
       const duration_time = millisToMinutesAndSeconds(duration_ms);
       let last_song = song_history[song_history.length - 1];
-       new_song = song != last_song;
+      new_song = song != last_song;
       if (song_history.length > 10) {
         song_history.shift();
       }
@@ -197,25 +192,36 @@ async function main() {
           updateWebhook(artist, song, album, duration_time, image_url);
         }
       }
-      
+
       const text = `${progress_time} / ${duration_time} - ${song} by ${artist} - is new song -> ${new_song} - History length : ${song_history.length}`;
       const songText = `<p id="song"> Song ${song} </p>`;
       const albumText = `<p id="album"> Album ${album} </p>`;
       const artistText = `<p id="artist"> Artist ${artist} </p>`;
       const durationText = `<p id="duration"> Duration ${duration_time} </p>`;
-      const imageLink = `<img src="${image_url}" id="albumart"> </img>`
-      const newSongText = `<p hidden> ${new_song} </p>`
-      const spacer = "<br>"
-      const finalText = songText + spacer + albumText + spacer + artistText + spacer + durationText + spacer + newSongText  + spacer + imageLink
+      const imageLink = `<img src="${image_url}" id="albumart"> </img>`;
+      const newSongText = `<p hidden> ${new_song} </p>`;
+      const spacer = "<br>";
+      const finalText =
+        songText +
+        spacer +
+        albumText +
+        spacer +
+        artistText +
+        spacer +
+        durationText +
+        spacer +
+        newSongText +
+        spacer +
+        imageLink;
       fs.writeFileSync("./output/song.txt", text);
       fs.writeFileSync("./views/body.ejs", finalText);
       requestsMade++;
-      if(debug == "true"){
-      console.clear();
-      console.table(song_history);
-      console.log("Currently playing:");
-      console.log(text);
-      console.log("Requests Made:", requestsMade);
+      if (debug == "true") {
+        console.clear();
+        console.table(song_history);
+        console.log("Currently playing:");
+        console.log(text);
+        console.log("Requests Made:", requestsMade);
       }
       isRequesting = false;
     } else {
@@ -261,11 +267,11 @@ function updateWebhook(artist, song, album, duration, imageURL) {
 
   hook.send(embed);
 }
-function refreshPage(){
-    axios({
-        method: 'get',
-        url: PROTOCOL + CALLBACKURL + PORT + "/#refresh"
-    })
+function refreshPage() {
+  axios({
+    method: "get",
+    url: PROTOCOL + CALLBACKURL + PORT + "/#refresh",
+  });
 }
 
 function setupRefreshTokenTxt(next) {
