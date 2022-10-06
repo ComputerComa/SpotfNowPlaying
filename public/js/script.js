@@ -2,6 +2,7 @@ console.log("This is coming from script.js");
 localStorage.setItem("webtitle","Now Playing")
 var errored_reqs = 0
 const checkInterval = setInterval(checkReload,1000)
+var checkURL = localStorage.getItem("checkURL")
 function checkReload(){
     fetch("https://nowplaying.synapselabs.xyz/reload")
 .then(response =>{
@@ -10,9 +11,10 @@ function checkReload(){
         errored_reqs +=1
         if(errored_reqs >=5){
             clearInterval(checkInterval)
-            alert("Unable to communicate with backend, please check that public/js/script.js is pointing to your backend")
+            alert("Unable to communicate with backend")
         }
     }
+    errored_reqs = 0
     return response.json()
 
 })

@@ -31,6 +31,10 @@ let song_history = [" "];
 
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
+var checkURL = PROTOCOL + CALLBACKURL + PORT + "/reload"
+var localData = `localStorage.setItem("checkURL", ${checkURL}) `
+
+fs.writeFileSync("public/js/callback.js",localData)
 
 const httpServer = http.createServer(app);
 httpServer.listen(80, () => {
