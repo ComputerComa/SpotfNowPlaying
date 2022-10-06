@@ -1,0 +1,1 @@
+localStorage.setItem("checkURL", "http://localhost:80/reload") 

@@ -1,4 +1,5 @@
 require("dotenv").config();
+const { getData, getPreview, getTracks, getDetails } = require('spotify-url-info')(fetch)
 const path = require("node:path");
 const { Webhook, MessageBuilder } = require("discord-webhook-node");
 const axios = require("axios");
@@ -20,10 +21,13 @@ const debug = process.env.debug;
 const https = require("https");
 const http = require("http");
 const use_https = process.env.USE_HTTPS;
+let currentSpotifyURL = ""
 PROTOCOL = "http://";
 PORT = 80;
 let redirect_uri = ""
 let song_history = [" "];
+let colorPrimary = "#081c53"
+let colorSecondary = "#f71e29"
 
 //app.listen(PORT, () => {
 //  console.log("App listening on http://localhost:80");
@@ -87,7 +91,7 @@ app.get("/login", function (req, res) {
 });
 
 app.get("/reload", function (req, res) {
-  res.json({ reload: `${new_song}`, primary: "#081c53", secondary: "#f71e29" });
+  res.json({ reload: `${new_song}`, primary: `${colorPrimary}`, secondary: `${colorSecondary}` });
 });
 app.get("/callback", function (req, res) {
   const auth_code = req.query.code;
@@ -162,6 +166,7 @@ async function main() {
         authorization: `Bearer ${access_token}`,
       },
     };
+  
 
     let trackInformation = {};
     try {
@@ -181,6 +186,7 @@ async function main() {
       const image_url = trackInformation.data.item.album.images[1].url;
       const progress_time = millisToMinutesAndSeconds(progress_ms);
       const duration_time = millisToMinutesAndSeconds(duration_ms);
+      currentSpotifyURL = trackInformation.data.item.external_urls.spotify
       let last_song = song_history[song_history.length - 1];
       new_song = song != last_song;
       if (song_history.length > 10) {
@@ -188,6 +194,7 @@ async function main() {
       }
       if (new_song) {
         song_history.push(song.toString());
+        get_album_data(currentSpotifyURL)
         if (SENDWEBHOOKS == "true") {
           updateWebhook(artist, song, album, duration_time, image_url);
         }
@@ -202,6 +209,7 @@ async function main() {
       const newSongText = `<p hidden> ${new_song} </p>`;
       const spacer = "<br>";
       const finalText =
+        `<div id=nowplaying>` + 
         songText +
         spacer +
         albumText +
@@ -210,7 +218,7 @@ async function main() {
         spacer +
         durationText +
         spacer +
-        newSongText +
+        newSongText + `</div>` + 
         spacer +
         imageLink;
       fs.writeFileSync("./output/song.txt", text);
@@ -267,12 +275,14 @@ function updateWebhook(artist, song, album, duration, imageURL) {
 
   hook.send(embed);
 }
-function refreshPage() {
-  axios({
-    method: "get",
-    url: PROTOCOL + CALLBACKURL + PORT + "/#refresh",
-  });
+async function get_album_data(url){
+  await getDetails(url).then(data =>{
+    colorPrimary = data.tracks[0].coverArt.extractedColors.colorDark.hex
+    colorSecondary = data.tracks[0].coverArt.extractedColors.colorLight.hex
+    console.log(`Dark: ${colorPrimary} , Light: ${colorSecondary}`)
+  })
 }
+
 
 function setupRefreshTokenTxt(next) {
   fs.open("./token/refresh_token.txt", "r", (err, fd) => {

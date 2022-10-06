@@ -4,19 +4,30 @@ var errored_reqs = [0,0]
 var error_limit = 5
 const checkInterval = setInterval(checkReload,1000)
 var checkURL = localStorage.getItem("checkURL")
+
+
 function cancelReqs(){
         clearInterval(checkInterval)
         alert("Unable to communicate with backend")
 }
+
+        if(errored_reqs[0] >= error_limit || errored_reqs[1] >=error_limit){
+            cancelReqs()
+        }
+
+
+
 function checkReload(){
-    fetch("https://nowplaying.synapselabs.xyz/reload")
+    
+        if(errored_reqs[0] >= error_limit || errored_reqs[1] >=error_limit){
+            cancelReqs()
+        }
+    fetch(checkURL)
 .then(response =>{
     if (!response.ok){
         console.error(`Request failed with status ${response.status}`)
         errored_reqs[0] +=1
-        if(errored_reqs[0] >= error_limit || errored_reqs[1] >=error_limit){
-            cancelReqs()
-        }
+
     }
     errored_reqs = 0
     return response.json()
@@ -25,7 +36,8 @@ function checkReload(){
 .then(data => {
     //console.log(data.reload)
     if(data.reload == "true"){
-        
+        localStorage.setItem("background", data.primary)
+        localStorage.setItem("foreground",data.secondary)
         console.log("Reloading page")
         location.reload()
 

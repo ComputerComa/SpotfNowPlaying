@@ -1,11 +1,24 @@
 body {
-    background-color: #081c53;
     font-family: "Lato", "Helvetica", Helvetica, sans-serif;
-    color: #f71e29;
     padding: 20px;
     letter-spacing: 1px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
 }
 img{
     border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    align-self: center;
+    margin-top: 2rem;
+}
+#nowplaying{
+    background-color: rgba(0, 0, 0, 0.555);
+    width: fit-content;
+    align-self: center;
+    text-align: center;
+    align-items: center;
+    padding-left: 2em;
+    padding-right: 2em;
 }
