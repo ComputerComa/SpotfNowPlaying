@@ -3,7 +3,7 @@ $(document).ready(function () {
   console.log("ready!");
   var song = document.getElementById("song").innerText;
   song = song.split("Song")[1];
-  let artist = document.getElementById("artist")[1];
+  let artist = document.getElementById("artist").innerText;
   artist = artist.split("Artist")[1];
   let title = "Now Playing - " + song + artist;
   localStorage.setItem("webtitle", title);
