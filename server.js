@@ -15,11 +15,14 @@ const DISCORD_USERNAME = process.env.DISCORD_USERNAME;
 const CALLBACKURL = process.env.CALLBACK_URL_IP;
 const SENDWEBHOOKS = process.env.SEND_WEBHOOKS;
 let new_song = false
-const PROTOCOL = process.env.PROTOCOL
-const PORT = process.env.PORT
+//const PORT = process.env.PORT
 const debug = process.env.debug
 const https = require('https');
 const http = require('http');
+const use_https = process.env.USE_HTTPS
+PROTOCOL = "http://"
+PORT = 80
+
 let song_history = [" "];
 
 //app.listen(PORT, () => {
@@ -30,18 +33,25 @@ app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 
 const httpServer = http.createServer(app);
-const httpsServer = https.createServer({
-  key: fs.readFileSync('/etc/letsencrypt/live/nowplaying.synapselabs.xyz/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/nowplaying.synapselabs.xyz/fullchain.pem'),
-}, app);
-
 httpServer.listen(80, () => {
     console.log('HTTP Server running on port 80');
 });
 
+if(use_https == "true"){
+  PROTOCOL = "https://"
+  PORT = "443"
+  const certPath = process.env.CERT_PATH
+  const keyPath = process.env.KEYFILE_Path
+const httpsServer = https.createServer({
+  key: fs.readFileSync(keyPath),
+  cert: fs.readFileSync(certPath),
+}, app);
 httpsServer.listen(443, () => {
     console.log('HTTPS Server running on port 443');
 });
+} else {
+  console.info("HTTPS disabled , serving on http only!")
+}
 
 
 /* ++++++++++++++++++++++++++ */
@@ -66,8 +76,11 @@ app.get("/login", function (req, res) {
       encodeURIComponent(redirect_uri)
   );
 });
+
+
+
 app.get("/reload",function(req,res){
-    res.json({reload : `${new_song}`})
+    res.json({reload : `${new_song}`,primary: "#081c53",secondary: "#f71e29"})
 })
 app.get("/callback", function (req, res) {
   const auth_code = req.query.code;
