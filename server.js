@@ -39,13 +39,13 @@ app.use(express.static(path.join(__dirname, "public")));
 
 
 if(use_https == "true"){
-  var checkURL = `"${PROTOCOL}${CALLBACKURL}/reload"`
-var localData = `localStorage.setItem("checkURL", ${checkURL}) `
-fs.writeFileSync("public/js/callback.js",localData)
   PROTOCOL = "https://"
   PORT = "443"
   const certPath = process.env.CERT_PATH
   const keyPath = process.env.KEYFILE_Path
+    var checkURL = `"${PROTOCOL}${CALLBACKURL}/reload"`
+var localData = `localStorage.setItem("checkURL", ${checkURL}) `
+fs.writeFileSync("public/js/callback.js",localData)
 const httpsServer = https.createServer({
   key: fs.readFileSync(keyPath),
   cert: fs.readFileSync(certPath),
