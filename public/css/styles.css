@@ -12,6 +12,9 @@ img{
     height: 200px;
     align-self: center;
     margin-top: 2rem;
+    border: 2px;
+    border-style: solid;
+    border-color: black;
 }
 #nowplaying{
     background-color: rgba(0, 0, 0, 0.555);
