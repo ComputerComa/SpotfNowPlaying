@@ -14,6 +14,12 @@ function checkReload(){
     if(data.reload == "true"){
         console.log("Reloading page")
         location.reload()
+        let song = document.getElementById("song").innerText
+        song = song.split("Song")[1]
+        let artist = document.getElementById("Artist")[1]
+        artist = artist.split("Artist")[1]
+        let title = "Now Playing - " + song + artist
+        document.title = title
     }
 })
 }
