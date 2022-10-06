@@ -22,7 +22,7 @@ const http = require("http");
 const use_https = process.env.USE_HTTPS;
 PROTOCOL = "http://";
 PORT = 80;
-
+let redirect_uri = ""
 let song_history = [" "];
 
 //app.listen(PORT, () => {
@@ -33,12 +33,14 @@ app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 
 if (use_https == "true") {
+
   PROTOCOL = "https://";
   PORT = "443";
   const certPath = process.env.CERT_PATH;
   const keyPath = process.env.KEYFILE_Path;
   var checkURL = `"${PROTOCOL}${CALLBACKURL}/reload"`;
   var localData = `localStorage.setItem("checkURL", ${checkURL}) `;
+  redirect_uri = `https://${CALLBACKURL}/callback`
   fs.writeFileSync("public/js/callback.js", localData);
   const httpsServer = https.createServer(
     {
@@ -55,6 +57,7 @@ if (use_https == "true") {
   var checkURL = `"${PROTOCOL}${CALLBACKURL}:80/reload"`;
   var localData = `localStorage.setItem("checkURL", ${checkURL}) `;
   fs.writeFileSync("public/js/callback.js", localData);
+  redirect_uri = `http://${CALLBACKURL}/callback`
 }
 
 const httpServer = http.createServer(app);
@@ -71,7 +74,6 @@ app.get("/", function (req, res) {
 
 app.get("/login", function (req, res) {
   const scopes = "user-read-currently-playing";
-  redirect_uri = `https://${CALLBACKURL}/callback`
   res.redirect(
     "https://accounts.spotify.com/authorize" +
       "?response_type=code" +
@@ -89,7 +91,6 @@ app.get("/reload", function (req, res) {
 });
 app.get("/callback", function (req, res) {
   const auth_code = req.query.code;
-  redirect_uri = `https://${CALLBACKURL}/callback`
   const options = {
     url: "https://accounts.spotify.com/api/token",
     method: "post",
