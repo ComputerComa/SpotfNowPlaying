@@ -71,7 +71,7 @@ app.get("/", function (req, res) {
 
 app.get("/login", function (req, res) {
   const scopes = "user-read-currently-playing";
-  redirect_uri = `http://${CALLBACKURL}/callback`
+  redirect_uri = `https://${CALLBACKURL}/callback`
   res.redirect(
     "https://accounts.spotify.com/authorize" +
       "?response_type=code" +
@@ -89,7 +89,7 @@ app.get("/reload", function (req, res) {
 });
 app.get("/callback", function (req, res) {
   const auth_code = req.query.code;
-  redirect_uri = `http://${CALLBACKURL}/callback`
+  redirect_uri = `https://${CALLBACKURL}/callback`
   const options = {
     url: "https://accounts.spotify.com/api/token",
     method: "post",
