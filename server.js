@@ -71,8 +71,10 @@ app.get("/", function (req, res) {
 
 app.get("/login", function (req, res) {
   const scopes = "user-read-currently-playing";
-  const redirect_uri = PROTOCOL + CALLBACKURL + PORT + "/callback";
-
+  let redirect_uri = ""
+  if (use_https == "true"){redirect_uri = `${PROTOCOL}${CALLBACKURL}:${PORT}/callback`;}else{
+   redirect_uri = `${PROTOCOL}${CALLBACKURL}/callback`;
+  }
   res.redirect(
     "https://accounts.spotify.com/authorize" +
       "?response_type=code" +
@@ -90,7 +92,10 @@ app.get("/reload", function (req, res) {
 });
 app.get("/callback", function (req, res) {
   const auth_code = req.query.code;
-  const redirect_uri = PROTOCOL + CALLBACKURL + PORT + "/callback";
+  let redirect_uri = ""
+    if (use_https == "true"){redirect_uri = `${PROTOCOL}${CALLBACKURL}:${PORT}/callback`;}else{
+  redirect_uri = `${PROTOCOL}${CALLBACKURL}/callback`;
+  };
   const options = {
     url: "https://accounts.spotify.com/api/token",
     method: "post",
@@ -232,7 +237,7 @@ async function main() {
   } else {
     console.clear();
     console.log("Please authorize first.");
-    console.log(`Open "http://${CALLBACKURL}:80/login in your browser.`);
+    console.log(`Open "${PROTOCOL}${CALLBACKURL}:${PORT}/login in your browser.`);
     isRequesting = false;
   }
 }
