@@ -33,3 +33,9 @@ if you plan on using a discord webhook, fill out the `DISCORD_WEBHOOK_URL` and t
 npm start
 ```
 If you start it for the first time, follow the instructions in the console to authorize your user account with Spotify. After that, you should start to see the following:
+
+
+
+
+
+
