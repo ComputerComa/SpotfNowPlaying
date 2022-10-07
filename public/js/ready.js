@@ -5,6 +5,7 @@ error_limit = 10;
 //const interval = window.setInterval(checkReload(), 2000);
 function refreshData() {
   getSongData(dataurl);
+  
 }
 function getSongData(dataURL) {
   fetch(dataURL, { cache: "no-store" })
@@ -57,14 +58,17 @@ function transitionColors(primary, secondary) {
   );
 }
 
+
+
+
 function updatePageData(data) {
   //console.log(data);
   var title = `${data.song} - ${data.artist} - `;
   localStorage.setItem("webtitle", title);
-  var msg = localStorage.getItem("webtitle");
-  var chars = Array.from(msg);
+
   var windowtimeout = null
   if(windowtimeout){
+    console.log(windowtimeout)
     clearTimeout(windowtimeout)
   }else{
 function scrollTitle() {
