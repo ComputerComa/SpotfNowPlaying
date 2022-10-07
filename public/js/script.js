@@ -2,7 +2,7 @@ console.log("This is coming from script.js");
 localStorage.setItem("webtitle","Now Playing")
 var errored_reqs = [0,0]
 var error_limit = 5
-const checkInterval = setInterval(checkReload,1000)
+const checkInterval = setInterval(checkReload,2000)
 var checkURL = localStorage.getItem("checkURL")
 
 

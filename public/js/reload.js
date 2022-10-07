@@ -20,22 +20,12 @@ $( document ).ready(function() {
   let artist = document.getElementById("artist").innerText;
   artist = artist.split("Artist")[1];
   let title = song + " -" + artist + " - ";
+  localStorage.
   localStorage.setItem("webtitle", title);
   document.title = localStorage.getItem("webtitle");
   document.body.style.backgroundColor = localStorage.getItem("background")
   document.body.style.color = localStorage.getItem("foreground")
- var msg = localStorage.getItem("webtitle")
-var chars = Array.from(msg);
 
-  function scrollTitle() {
-    chars.push(chars.shift());
-    document.title = chars.join("");
-    window.setTimeout(scrollTitle, 120);
-  }
-
-  (function() {
-    scrollTitle();
-  })();
 });
 
 
