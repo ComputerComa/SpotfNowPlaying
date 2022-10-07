@@ -80,7 +80,7 @@ if (use_https == "true") {
   const keyPath = process.env.KEYFILE_Path;
   var checkURL = `"${PROTOCOL}${CALLBACKURL}/reload"`;
   var dataURL = `"${PROTOCOL}${CALLBACKURL}/data"`;
-  var localData = `localStorage.setItem("checkURL", ${checkURL}) \n localStorage.setItem("checkURL", ${dataURL}) `;
+  var localData = `localStorage.setItem("checkURL", ${checkURL}) \n localStorage.setItem("dataURL", ${dataURL}) `;
   redirect_uri = `https://${CALLBACKURL}/callback`;
   fs.writeFileSync("public/js/callback.js", localData);
   const httpsServer = https.createServer(
