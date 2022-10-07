@@ -2,7 +2,6 @@ var dataurl = localStorage.getItem("dataURL");
 var checkurl = localStorage.getItem("checkURL");
 errored_reqs = 0;
 error_limit = 10;
-//const interval = window.setInterval(checkReload(), 2000);
 function refreshData() {
   getSongData(dataurl);
   
@@ -16,8 +15,6 @@ function getSongData(dataURL) {
       return response.json();
     })
     .then((data) => {
-      //console.log(data);
-      var title = `${data.song} - ${data.artist} - `;
       updatePageData(data);
       transitionColors(data.colorPrimary, data.colorSecondary);
     });
@@ -57,28 +54,13 @@ function transitionColors(primary, secondary) {
     }
   );
 }
-windowtimeout = window.setTimeout(scrollTitle, 120);
 
-title = localStorage.getItem("webtitle")
- var chars = Array.from(title)
- chars.dro
-  console.log(windowtimeout)
-function scrollTitle() {
-    chars.push(chars.shift());
-    document.title = chars.join("");
-    windowtimeout = window.setTimeout(scrollTitle, 120);
-  }
-
-  (function () {
-    scrollTitle();
-  })();
 
 function updatePageData(data) {
   //console.log(data);
-  var title = `${data.song} - ${data.artist} - `;
-  localStorage.setItem("webtitle", title);
-  clearTimeout(windowtimeout)
-  windowtimeout = window.setTimeout(scrollTitle, 120);
+  var title = `${data.song} - ${data.artist}`;
+document.title = title
+
   document.getElementById("song").innerText = "Song " + data.song;
   document.getElementById("album").innerText = "Album " + data.album;
   document.getElementById("artist").innerText = "Artist " + data.artist;
