@@ -65,7 +65,7 @@ function updatePageData(data) {
   //console.log(data);
   var title = `${data.song} - ${data.artist} - `;
   localStorage.setItem("webtitle", title);
-
+  var chars = Array.from(title)
   var windowtimeout = null
   if(windowtimeout){
     console.log(windowtimeout)
