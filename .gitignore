@@ -13,3 +13,5 @@ token/refresh_token.txt
 
 *.txt
 test.json
+.me
+views/body.ejs
