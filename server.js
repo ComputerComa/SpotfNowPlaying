@@ -1,4 +1,6 @@
 require("dotenv").config();
+const { getData, getPreview, getTracks, getDetails } =
+  require("spotify-url-info")(fetch);
 const path = require("node:path");
 const { Webhook, MessageBuilder } = require("discord-webhook-node");
 const axios = require("axios");
@@ -14,16 +16,98 @@ const base64data = buff.toString("base64");
 const DISCORD_USERNAME = process.env.DISCORD_USERNAME;
 const CALLBACKURL = process.env.CALLBACK_URL_IP;
 const SENDWEBHOOKS = process.env.SEND_WEBHOOKS;
-let new_song = false
-const PROTOCOL = process.env.PROTOCOL
-const PORT = process.env.PORT
-const debug = process.env.debug
+let new_song = false;
+//const PORT = process.env.PORT
+const debug = process.env.debug;
+const https = require("https");
+const http = require("http");
+const { Colors } = require("discord.js");
+const use_https = process.env.USE_HTTPS;
+let currentSpotifyURL = "";
+PROTOCOL = "http://";
+PORT = 80;
+let redirect_uri = "";
 let song_history = [" "];
-app.listen(80, () => {
-  console.log("App listening on http://localhost:80");
-});
+let colorPrimary = "#081c53";
+let colorSecondary = "#f71e29";
+
+class albumColors {
+  constructor(primary, secondary) {
+    (this.primaryColor = primary), (this.secondaryColor = secondary);
+  }
+}
+
+class mediaInfo {
+  constructor(
+    artist,
+    song,
+    album,
+    duration_time,
+    colorPrimary,
+    colorSecondary,
+    imageURL
+  ) {
+    this.artist = artist;
+    this.song = song;
+    this.album = album;
+    this.duration = duration_time;
+    this.colorPrimary = colorPrimary;
+    this.colorSecondary = colorSecondary;
+    this.imageURL = imageURL;
+  }
+}
+let nowPlayingMediaInfo = new mediaInfo(
+  "artist",
+  "song",
+  "album",
+  "time",
+  "colorprimary",
+  "colorsecondary",
+  "imageURL"
+);
+
+//app.listen(PORT, () => {
+//  console.log("App listening on http://localhost:80");
+//});
+
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
+
+if (use_https == "true") {
+  PROTOCOL = "https://";
+  PORT = "443";
+  const certPath = process.env.CERT_PATH;
+  const keyPath = process.env.KEYFILE_Path;
+  var checkURL = `"${PROTOCOL}${CALLBACKURL}/reload"`;
+  var dataURL = `"${PROTOCOL}${CALLBACKURL}/data"`;
+  var localData = `localStorage.setItem("checkURL", ${checkURL}) \n localStorage.setItem("checkURL", ${dataURL}) `;
+  redirect_uri = `https://${CALLBACKURL}/callback`;
+  fs.writeFileSync("public/js/callback.js", localData);
+  const httpsServer = https.createServer(
+    {
+      key: fs.readFileSync(keyPath),
+      cert: fs.readFileSync(certPath),
+    },
+    app
+  );
+  httpsServer.listen(443, () => {
+    console.log("HTTPS Server running on port 443");
+  });
+} else {
+  console.info("HTTPS disabled , serving on http only!");
+  var checkURL = `"${PROTOCOL}${CALLBACKURL}:80/reload"`;
+  var dataURL = `"${PROTOCOL}${CALLBACKURL}:80/data"`;
+  console.info(dataURL);
+  var localData = `localStorage.setItem("checkURL", ${checkURL}) \n localStorage.setItem("dataURL", ${dataURL})`;
+  fs.writeFileSync("public/js/callback.js", localData);
+  redirect_uri = `http://${CALLBACKURL}/callback`;
+}
+
+const httpServer = http.createServer(app);
+httpServer.listen(80, () => {
+  console.log("HTTP Server running on port 80");
+});
+
 /* ++++++++++++++++++++++++++ */
 /* +++ USER AUTHORIZATION +++ */
 /* ++++++++++++++++++++++++++ */
@@ -33,8 +117,6 @@ app.get("/", function (req, res) {
 
 app.get("/login", function (req, res) {
   const scopes = "user-read-currently-playing";
-  const redirect_uri = PROTOCOL + CALLBACKURL + PORT + "/callback";
-
   res.redirect(
     "https://accounts.spotify.com/authorize" +
       "?response_type=code" +
@@ -46,12 +128,24 @@ app.get("/login", function (req, res) {
       encodeURIComponent(redirect_uri)
   );
 });
-app.get("/reload",function(req,res){
-    res.json({reload : `${new_song}`})
+
+app.get("/reload", function (req, res) {
+  res.json({
+    reload: `${new_song}`,
+  });
+});
+
+app.get("/data", function (req, res) {
+  res.json(nowPlayingMediaInfo)
+});
+
+app.post("/ack",function(req,res){
+  new_song = false
+  res.status(200)
 })
+
 app.get("/callback", function (req, res) {
   const auth_code = req.query.code;
-  const redirect_uri = PROTOCOL + CALLBACKURL + PORT + "/callback";
   const options = {
     url: "https://accounts.spotify.com/api/token",
     method: "post",
@@ -134,44 +228,49 @@ async function main() {
 
     if (trackInformation.data) {
       // WRITE TRACK INFORMATIONS TO FILE
-      const artist = trackInformation.data.item.artists[0].name;
-      const song = trackInformation.data.item.name;
-      const album = trackInformation.data.item.album.name;
-      const progress_ms = trackInformation.data.progress_ms;
-      const duration_ms = trackInformation.data.item.duration_ms;
-      const image_url = trackInformation.data.item.album.images[1].url;
-      const progress_time = millisToMinutesAndSeconds(progress_ms);
-      const duration_time = millisToMinutesAndSeconds(duration_ms);
+      let artist = trackInformation.data.item.artists[0].name;
+      let song = trackInformation.data.item.name;
+      let album = trackInformation.data.item.album.name;
+      let progress_ms = trackInformation.data.progress_ms;
+      let duration_ms = trackInformation.data.item.duration_ms;
+      let image_url = trackInformation.data.item.album.images[1].url;
+      let progress_time = millisToMinutesAndSeconds(progress_ms);
+      let duration_time = millisToMinutesAndSeconds(duration_ms);
+      let currentSpotifyURL = trackInformation.data.item.external_urls.spotify;
       let last_song = song_history[song_history.length - 1];
-       new_song = song != last_song;
+      new_song = song != last_song;
       if (song_history.length > 10) {
         song_history.shift();
       }
       if (new_song) {
+        nowPlayingMediaInfo.artist = artist;
+        nowPlayingMediaInfo.album = album
+        nowPlayingMediaInfo.song = song;
+        nowPlayingMediaInfo.duration = duration_time;
+        nowPlayingMediaInfo.imageURL = image_url;
+        song_colors = new albumColors("#000000", "#FFFFFF");
         song_history.push(song.toString());
+        await get_album_colors(currentSpotifyURL).then((colors) => {
+        nowPlayingMediaInfo.colorPrimary = colors.primaryColor
+        nowPlayingMediaInfo.colorSecondary = colors.secondaryColor
+         //console.log(colors);
+        });
+
         if (SENDWEBHOOKS == "true") {
           updateWebhook(artist, song, album, duration_time, image_url);
         }
       }
-      
+
       const text = `${progress_time} / ${duration_time} - ${song} by ${artist} - is new song -> ${new_song} - History length : ${song_history.length}`;
-      const songText = `<p id="song"> Song ${song} </p>`;
-      const albumText = `<p id="album> Album ${album} </p>`;
-      const artistText = `<p id="artist> Artist ${artist} </p>`;
-      const durationText = `<p id="duration"> Duration ${duration_time} </p>`;
-      const imageLink = `<img src="${image_url}" id="albumart"> </img>`
-      const newSongText = `<p hidden> ${new_song} </p>`
-      const spacer = "<br>"
-      const finalText = songText + spacer + albumText + spacer + artistText + spacer + durationText + spacer + newSongText  + spacer + imageLink
+
       fs.writeFileSync("./output/song.txt", text);
-      fs.writeFileSync("./views/body.ejs", finalText);
       requestsMade++;
-      if(debug == "true"){
-      console.clear();
-      console.table(song_history);
-      console.log("Currently playing:");
-      console.log(text);
-      console.log("Requests Made:", requestsMade);
+      if (debug == "true") {
+        console.clear();
+        console.table(song_history);
+        console.log("Currently playing:");
+        console.log(text);
+        console.log("Requests Made:", requestsMade);
       }
       isRequesting = false;
     } else {
@@ -182,7 +281,9 @@ async function main() {
   } else {
     console.clear();
     console.log("Please authorize first.");
-    console.log(`Open "http://${CALLBACKURL}:80/login in your browser.`);
+    console.log(
+      `Open "${PROTOCOL}${CALLBACKURL}:${PORT}/login in your browser.`
+    );
     isRequesting = false;
   }
 }
@@ -191,7 +292,7 @@ async function main() {
 /* +++ START MAIN LOOP +++ */
 /* +++++++++++++++++++++++ */
 setupRefreshTokenTxt(() => {
-  setInterval(main, 5000);
+  setInterval(main, 2000);
 });
 
 /* ++++++++++++++++++++++++ */
@@ -217,11 +318,16 @@ function updateWebhook(artist, song, album, duration, imageURL) {
 
   hook.send(embed);
 }
-function refreshPage(){
-    axios({
-        method: 'get',
-        url: PROTOCOL + CALLBACKURL + PORT + "/#refresh"
-    })
+async function get_album_colors(url) {
+  let colors = new albumColors("3fff", "4fff");
+  await getDetails(url).then((data) => {
+    colorPrimary = data.tracks[0].coverArt.extractedColors.colorDark.hex;
+    colorSecondary = data.tracks[0].coverArt.extractedColors.colorLight.hex;
+    //console.log(`Dark: ${colorPrimary} , Light: ${colorSecondary}`);
+    colors.primaryColor = colorPrimary;
+    colors.secondaryColor = colorSecondary;
+  });
+  return colors;
 }
 
 function setupRefreshTokenTxt(next) {
