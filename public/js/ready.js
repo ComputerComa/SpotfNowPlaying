@@ -57,20 +57,12 @@ function transitionColors(primary, secondary) {
     }
   );
 }
+windowtimeout = window.setTimeout(scrollTitle, 120);
 
-
-
-
-function updatePageData(data) {
-  //console.log(data);
-  var title = `${data.song} - ${data.artist} - `;
-  localStorage.setItem("webtitle", title);
-  var chars = Array.from(title)
-  var windowtimeout = null
-  if(windowtimeout){
-    console.log(windowtimeout)
-    clearTimeout(windowtimeout)
-  }else{
+title = localStorage.getItem("webtitle")
+ var chars = Array.from(title)
+ chars.dro
+  console.log(windowtimeout)
 function scrollTitle() {
     chars.push(chars.shift());
     document.title = chars.join("");
@@ -80,8 +72,13 @@ function scrollTitle() {
   (function () {
     scrollTitle();
   })();
-  }
-  
+
+function updatePageData(data) {
+  //console.log(data);
+  var title = `${data.song} - ${data.artist} - `;
+  localStorage.setItem("webtitle", title);
+  clearTimeout(windowtimeout)
+  windowtimeout = window.setTimeout(scrollTitle, 120);
   document.getElementById("song").innerText = "Song " + data.song;
   document.getElementById("album").innerText = "Album " + data.album;
   document.getElementById("artist").innerText = "Artist " + data.artist;
