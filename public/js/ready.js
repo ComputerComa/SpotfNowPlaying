@@ -2,7 +2,7 @@ var dataurl = localStorage.getItem("dataURL");
 var checkurl = localStorage.getItem("checkURL");
 errored_reqs = 0;
 error_limit = 10;
-const interval = window.setInterval(checkReload(), 2000);
+//const interval = window.setInterval(checkReload(), 2000);
 function refreshData() {
   getSongData(dataurl);
 }
@@ -22,13 +22,13 @@ function getSongData(dataURL) {
     });
 }
 function checkReload() {
-  console.info("polling for updates");
+  console.log("polling for updates");
   fetch(checkurl, { cache: "no-store" })
     .then((response) => {
       if (!response.ok) {
         console.error(`Request failed with status ${response.status}`);
+        clearTimeout(timeout)
       }
-      console.log(response.json())
       return response.json();
     })
     .then((data) => {
@@ -41,6 +41,7 @@ function checkReload() {
     .catch((error) => {
       console.error(error);
     });
+    
 }
 
 function transitionColors(primary, secondary) {
@@ -82,6 +83,10 @@ function stetupPage(dataURL) {
   getSongData(dataURL);
 
   console.info("initial load complete, setting up update timer");
+let timer = setTimeout(function myTimer(){
+    checkReload()
+    timer = setTimeout(myTimer,2000)
+},1000)
 }
 
 $(document).ready(function () {

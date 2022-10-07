@@ -139,6 +139,11 @@ app.get("/data", function (req, res) {
   res.json(nowPlayingMediaInfo)
 });
 
+app.post("/ack",function(req,res){
+  new_song = false
+  res.status(200)
+})
+
 app.get("/callback", function (req, res) {
   const auth_code = req.query.code;
   const options = {
