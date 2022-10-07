@@ -63,16 +63,21 @@ function updatePageData(data) {
   localStorage.setItem("webtitle", title);
   var msg = localStorage.getItem("webtitle");
   var chars = Array.from(msg);
-
-  function scrollTitle() {
+  var windowtimeout = null
+  if(windowtimeout){
+    clearTimeout(windowtimeout)
+  }else{
+function scrollTitle() {
     chars.push(chars.shift());
     document.title = chars.join("");
-    window.setTimeout(scrollTitle, 120);
+    windowtimeout = window.setTimeout(scrollTitle, 120);
   }
 
   (function () {
     scrollTitle();
   })();
+  }
+  
   document.getElementById("song").innerText = "Song " + data.song;
   document.getElementById("album").innerText = "Album " + data.album;
   document.getElementById("artist").innerText = "Artist " + data.artist;
