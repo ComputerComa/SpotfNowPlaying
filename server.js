@@ -1,3 +1,4 @@
+let errorcount = 
 require("dotenv").config();
 const { getData, getPreview, getTracks, getDetails } =
   require("spotify-url-info")(fetch);
@@ -21,7 +22,7 @@ let new_song = false;
 const debug = process.env.debug;
 const https = require("https");
 const http = require("http");
-const { Colors } = require("discord.js");
+const { exit } = require("node:process");
 const use_https = process.env.USE_HTTPS;
 let currentSpotifyURL = "";
 PROTOCOL = "http://";
@@ -168,6 +169,7 @@ app.get("/callback", function (req, res) {
     })
     .catch((err) => {
       console.log(err.message);
+      errorcount +=1
     });
 });
 
@@ -178,6 +180,9 @@ app.get("/callback", function (req, res) {
 let isRequesting = false;
 let requestsMade = 0;
 async function main() {
+  if (errorcount >= 5){
+  exit()
+  }
   if (isRequesting) {
     return;
   }
@@ -207,6 +212,7 @@ async function main() {
     } catch (e) {
       console.error("refresh_token request error");
       console.error(e.message);
+      errorcount +=1
     }
 
     // REQUEST CURRENTLY PLAYING SONG DATA
@@ -224,6 +230,7 @@ async function main() {
     } catch (e) {
       console.error("currently-playing request error");
       console.error(e.message);
+      errorcount +=1
     }
 
     if (trackInformation.data) {
