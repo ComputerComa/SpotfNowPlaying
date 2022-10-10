@@ -234,7 +234,8 @@ async function main() {
     }
 
     if (trackInformation.data) {
-      // WRITE TRACK INFORMATIONS TO FILE
+      try {
+              // WRITE TRACK INFORMATIONS TO FILE
       let artist = trackInformation.data.item.artists[0].name;
       let song = trackInformation.data.item.name;
       let album = trackInformation.data.item.album.name;
@@ -280,6 +281,11 @@ async function main() {
         console.log("Requests Made:", requestsMade);
       }
       isRequesting = false;
+      } catch (error) {
+        console.error
+        errorcount +=1
+      }
+
     } else {
       console.clear();
       console.log("Looks like you are not playing anyting at the moment.");
@@ -326,7 +332,9 @@ function updateWebhook(artist, song, album, duration, imageURL) {
   hook.send(embed);
 }
 async function get_album_colors(url) {
-  let colors = new albumColors("3fff", "4fff");
+  let colors = new albumColors("#000000", "#ffffff");
+  try {
+      
   await getDetails(url).then((data) => {
     colorPrimary = data.tracks[0].coverArt.extractedColors.colorDark.hex;
     colorSecondary = data.tracks[0].coverArt.extractedColors.colorLight.hex;
@@ -335,6 +343,10 @@ async function get_album_colors(url) {
     colors.secondaryColor = colorSecondary;
   });
   return colors;
+  } catch (error) {
+    return new albumColors("#000000", "#ffffff")
+  }
+
 }
 
 function setupRefreshTokenTxt(next) {
