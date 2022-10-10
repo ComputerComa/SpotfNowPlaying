@@ -344,6 +344,7 @@ async function get_album_colors(url) {
   });
   return colors;
   } catch (error) {
+    errorcount +=1
     return new albumColors("#000000", "#ffffff")
   }
 
