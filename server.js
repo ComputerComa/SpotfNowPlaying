@@ -300,7 +300,7 @@ async function main() {
       } catch (error) {
         console.error
         errorcount +=1
-        io.notifyError(new Error(err.message), {
+        io.notifyError(new Error(error.message), {
     // or anything that you can like an user id
     custom: {
       errorcount: errorcount
@@ -367,7 +367,7 @@ async function get_album_colors(url) {
   return colors;
   } catch (error) {
     errorcount +=1
-    io.notifyError(new Error(err.message), {
+    io.notifyError(new Error(error.message), {
     // or anything that you can like an user id
     custom: {
       errorcount: errorcount
