@@ -1,4 +1,6 @@
-let errorcount = 
+let errorcount = 0
+
+const io = require('@pm2/io')
 require("dotenv").config();
 const { getData, getPreview, getTracks, getDetails } =
   require("spotify-url-info")(fetch);
@@ -170,6 +172,13 @@ app.get("/callback", function (req, res) {
     .catch((err) => {
       console.log(err.message);
       errorcount +=1
+       io.notifyError(new Error(err.message), {
+    // or anything that you can like an user id
+    custom: {
+      errorcount: errorcount
+    }
+  })
+      
     });
 });
 
@@ -181,6 +190,7 @@ let isRequesting = false;
 let requestsMade = 0;
 async function main() {
   if (errorcount >= 5){
+    io.notifyError(new Error("Error limit reached... Restarting"))
   exit()
   }
   if (isRequesting) {
@@ -213,6 +223,12 @@ async function main() {
       console.error("refresh_token request error");
       console.error(e.message);
       errorcount +=1
+      io.notifyError(new Error(err.message), {
+    // or anything that you can like an user id
+    custom: {
+      errorcount: errorcount
+    }
+  })
     }
 
     // REQUEST CURRENTLY PLAYING SONG DATA
@@ -284,6 +300,12 @@ async function main() {
       } catch (error) {
         console.error
         errorcount +=1
+        io.notifyError(new Error(err.message), {
+    // or anything that you can like an user id
+    custom: {
+      errorcount: errorcount
+    }
+  })
       }
 
     } else {
@@ -345,6 +367,12 @@ async function get_album_colors(url) {
   return colors;
   } catch (error) {
     errorcount +=1
+    io.notifyError(new Error(err.message), {
+    // or anything that you can like an user id
+    custom: {
+      errorcount: errorcount
+    }
+  })
     return new albumColors("#000000", "#ffffff")
   }
 
