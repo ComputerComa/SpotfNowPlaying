@@ -13,6 +13,7 @@
     "http": "^0.0.1-security",
     "https": "^1.0.0",
     "isomorphic-unfetch": "^3.1.0",
+    "node-persist": "^3.1.0",
     "spotify-url-info": "^3.1.9"
   },
   "scripts": {
