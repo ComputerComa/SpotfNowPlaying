@@ -223,7 +223,7 @@ async function main() {
       console.error("refresh_token request error");
       console.error(e.message);
       errorcount +=1
-      io.notifyError(new Error(err.message), {
+      io.notifyError(new Error(e.message), {
     // or anything that you can like an user id
     custom: {
       errorcount: errorcount
