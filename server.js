@@ -1,6 +1,5 @@
 let errorcount = 0
-const storage = require('node-persist');
-await storage.init( /* options ... */ );
+
 const io = require('@pm2/io')
 require("dotenv").config();
 const { getData, getPreview, getTracks, getDetails } =
@@ -31,17 +30,7 @@ let currentSpotifyURL = "";
 PROTOCOL = "http://";
 PORT = 80;
 let redirect_uri = "";
-let song_history = [];
-try {
-  console.log(await storage.getItem('history').then(history =>{
-    song_history = history
-    return "found persistant history info \n restoring..."
-  }));
-} catch (error) {
-  console.info("unable to find persistant song history... starting with an empty set.")
-  song_history = [" "];
-}
-
+let song_history = [" "];
 let colorPrimary = "#081c53";
 let colorSecondary = "#f71e29";
 
@@ -201,13 +190,8 @@ let isRequesting = false;
 let requestsMade = 0;
 async function main() {
   if (errorcount >= 5){
-    await storage.setItem("history",song_history).then(e =>{
-
-      io.notifyError(new Error("Error limit reached... Restarting"))
-      exit()
-    })
-    
-  
+    io.notifyError(new Error("Error limit reached... Restarting"))
+  exit()
   }
   if (isRequesting) {
     return;
